@@ -28,3 +28,16 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "io.atlantica.MainKt"
+    }
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from({
+        configurations.runtimeClasspath.get().map { dependency ->
+            if (dependency.isDirectory) dependency else zipTree(dependency)
+        }
+    })
+}
