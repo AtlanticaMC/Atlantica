@@ -1,4 +1,4 @@
-package io.atlantica.io.atlantica.utils
+package io.atlantica.utils
 
 import java.net.InetSocketAddress
 import java.net.ServerSocket

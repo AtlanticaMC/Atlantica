@@ -17,6 +17,9 @@ dependencies {
     //Networking
     implementation("io.ktor:ktor-server-netty:3.5.0")
 
+    //Config
+    implementation("org.tomlj:tomlj:1.1.1")
+
     //logging
     implementation("org.slf4j:slf4j-nop:2.0.9")
     api("cz.lukynka:pretty-log:2.0")

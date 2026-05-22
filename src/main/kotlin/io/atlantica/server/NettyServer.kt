@@ -1,9 +1,9 @@
-package io.atlantica.io.atlantica.server
+package io.atlantica.server
 
 import cz.lukynka.prettylog.GlobalPrettyLogger.log
 import cz.lukynka.prettylog.LogType
-import io.atlantica.io.atlantica.AtlanticaServer
-import io.atlantica.io.atlantica.utils.isAddressInUse
+import io.atlantica.AtlanticaServer
+import io.atlantica.utils.isAddressInUse
 import io.netty.bootstrap.ServerBootstrap
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.nio.NioEventLoopGroup
@@ -33,8 +33,9 @@ class NettyServer(val server: AtlanticaServer) {
                 log("Address is already in use, shutting down server", LogType.ERROR)
                 exitProcess(0)
             }
-            bootstrap.bind(InetSocketAddress("", 1)).await()
-
+            bootstrap.bind(InetSocketAddress(server.config.toml.getString("ip"),
+                server.config.toml.getString("port")?.toInt() ?: 25565
+            )).await()
             log("DockyardMC server running on IP:Port", LogType.SUCCESS)
             null
         }
