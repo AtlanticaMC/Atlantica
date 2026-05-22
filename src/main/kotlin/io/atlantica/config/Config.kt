@@ -1,13 +1,24 @@
 package io.atlantica.config
 
-import kotlinx.io.files.FileSystem
 import org.tomlj.Toml
 import java.io.File
 import java.nio.file.Files
-import java.nio.file.Path
 
 class Config {
     val configPath: String = "config.toml"
-    val file = Files.readString(File(configPath).toPath())
-    val toml = Toml.parse(file)
+    val file: String
+    val toml: org.tomlj.TomlParseResult
+
+    init {
+        val path = File(configPath).toPath()
+        if (Files.notExists(path)) {
+            Config::class.java.getResourceAsStream("/config.toml").use { input ->
+                requireNotNull(input) { "Default config.toml resource is missing" }
+                Files.copy(input, path)
+            }
+        }
+
+        file = Files.readString(path)
+        toml = Toml.parse(file)
+    }
 }

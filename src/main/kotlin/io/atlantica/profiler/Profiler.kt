@@ -13,7 +13,7 @@ object Profiler {
 
     private val sections = ConcurrentHashMap<String, SectionStats>()
 
-    inline fun <T> section(
+    fun <T> section(
         name: String,
         warnAboveMs: Double = -1.0,
         block: () -> T

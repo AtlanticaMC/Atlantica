@@ -19,25 +19,25 @@ class NettyServer(val server: AtlanticaServer) {
     val workerGroup = NioEventLoopGroup()
 
     fun start(): CompletableFuture<Void> {
-        return  CompletableFuture.supplyAsync {
+        return CompletableFuture.runAsync {
+            val host = server.config.toml.getString("ip") ?: "0.0.0.0"
+            val port = server.config.toml.getLong("port")?.toInt() ?: 25565
             val bootstrap = ServerBootstrap()
             bootstrap.group(bossGroup, workerGroup)
                 .channel(NioServerSocketChannel::class.java)
                 .childHandler(object : ChannelInitializer<SocketChannel>() {
-                    override fun initChannel(ch: SocketChannel?) {
-                        val chain = ch?.pipeline()
-                        //TODO Add handlers to the pipeline
+                    override fun initChannel(ch: SocketChannel) {
+                        ch.pipeline()
+                            .addLast(MinecraftFrameDecoder())
+                            .addLast(MinecraftStatusHandler(server))
                     }
                 })
-            if (isAddressInUse("1", 1)) {
+            if (isAddressInUse(host, port)) {
                 log("Address is already in use, shutting down server", LogType.ERROR)
                 exitProcess(0)
             }
-            bootstrap.bind(InetSocketAddress(server.config.toml.getString("ip"),
-                server.config.toml.getString("port")?.toInt() ?: 25565
-            )).await()
-            log("DockyardMC server running on IP:Port", LogType.SUCCESS)
-            null
+            bootstrap.bind(InetSocketAddress(host, port)).sync()
+            log("AtlanticaMC server running on $host:$port", LogType.SUCCESS)
         }
     }
 
